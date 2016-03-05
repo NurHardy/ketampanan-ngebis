@@ -1,0 +1,15 @@
+body {
+	background-color: #eee;
+	margin: 0px;
+	padding: 0px;
+}
+.div_error {
+	
+}
+.wrapper {
+	width: 500px;
+	margin: 20px auto 10px;
+	box-shadow: 0px 0px 3px rgba(0,0,0,0.5);
+	padding: 10px;
+	background-color: #fff;
+}
