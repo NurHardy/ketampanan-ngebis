@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 10, 2016 at 08:49 AM
+-- Generation Time: Mar 14, 2016 at 06:38 AM
 -- Server version: 5.6.24
 -- PHP Version: 5.6.8
 
@@ -55,9 +55,10 @@ CREATE TABLE IF NOT EXISTS `tbl_jadwalharian` (
   `dayScheduleId` int(11) NOT NULL,
   `date` date NOT NULL,
   `scheduleId` int(11) NOT NULL,
+  `price` int(11) NOT NULL,
   `discount` int(11) NOT NULL,
-  `crewId` int(11) NOT NULL,
-  `vehicleId` int(11) NOT NULL,
+  `crewId` int(11) DEFAULT NULL,
+  `vehicleId` varchar(8) NOT NULL,
   `facility` set('Restaurant','Nasi Box') NOT NULL,
   `status` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -129,7 +130,7 @@ CREATE TABLE IF NOT EXISTS `tbl_numpak` (
   `customerId` int(11) NOT NULL,
   `name` varchar(64) NOT NULL,
   `address` text NOT NULL,
-  `idCardNumber` varchar(32) NOT NULL
+  `phoneNumber` varchar(32) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -155,8 +156,6 @@ CREATE TABLE IF NOT EXISTS `tbl_pesen` (
 CREATE TABLE IF NOT EXISTS `tbl_rute` (
   `routeId` int(11) NOT NULL,
   `companyId` int(11) NOT NULL,
-  `departurePoint` point NOT NULL,
-  `arrivalPoint` point NOT NULL,
   `path` multipoint NOT NULL,
   `routeName` varchar(64) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -198,9 +197,12 @@ CREATE TABLE IF NOT EXISTS `tbl_tipe_montor` (
 
 CREATE TABLE IF NOT EXISTS `tbl_titikmampir` (
   `transitId` int(11) NOT NULL,
-  `companyId` int(11) NOT NULL,
+  `routeId` int(11) NOT NULL,
   `location` point NOT NULL,
-  `locationName` varchar(128) NOT NULL
+  `locationName` varchar(128) NOT NULL,
+  `travelingTime` time NOT NULL,
+  `order` int(11) NOT NULL,
+  `status` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -223,7 +225,7 @@ ALTER TABLE `tbl_jadwal`
 -- Indexes for table `tbl_jadwalharian`
 --
 ALTER TABLE `tbl_jadwalharian`
-  ADD PRIMARY KEY (`dayScheduleId`), ADD KEY `crewId` (`crewId`), ADD KEY `vehicleId` (`vehicleId`), ADD KEY `scheduleId` (`scheduleId`), ADD KEY `scheduleId_2` (`scheduleId`), ADD KEY `crewId_2` (`crewId`), ADD KEY `vehicleId_2` (`vehicleId`);
+  ADD PRIMARY KEY (`dayScheduleId`), ADD KEY `crewId` (`crewId`), ADD KEY `vehicleId` (`vehicleId`), ADD KEY `scheduleId` (`scheduleId`), ADD KEY `scheduleId_2` (`scheduleId`), ADD KEY `crewId_2` (`crewId`), ADD KEY `vehicleId_2` (`vehicleId`), ADD KEY `vehicleId_3` (`vehicleId`), ADD KEY `vehicleId_4` (`vehicleId`);
 
 --
 -- Indexes for table `tbl_kruperson`
@@ -283,7 +285,7 @@ ALTER TABLE `tbl_tipe_montor`
 -- Indexes for table `tbl_titikmampir`
 --
 ALTER TABLE `tbl_titikmampir`
-  ADD PRIMARY KEY (`transitId`), ADD KEY `companyId` (`companyId`);
+  ADD PRIMARY KEY (`transitId`), ADD KEY `companyId` (`routeId`), ADD KEY `routeId` (`routeId`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -327,28 +329,29 @@ ALTER TABLE `tbl_titikmampir`
 -- Constraints for table `tbl_jadwal`
 --
 ALTER TABLE `tbl_jadwal`
-ADD CONSTRAINT `tbl_jadwal_ibfk_1` FOREIGN KEY (`companyId`) REFERENCES `tbl_autobuscompany` (`companyId`) ON DELETE CASCADE ON UPDATE CASCADE,
-ADD CONSTRAINT `tbl_jadwal_ibfk_2` FOREIGN KEY (`routeId`) REFERENCES `tbl_rute` (`routeId`) ON DELETE CASCADE ON UPDATE CASCADE;
+ADD CONSTRAINT `tbl_jadwal_ibfk_2` FOREIGN KEY (`routeId`) REFERENCES `tbl_rute` (`routeId`) ON DELETE CASCADE ON UPDATE CASCADE,
+ADD CONSTRAINT `tbl_jadwal_ibfk_3` FOREIGN KEY (`companyId`) REFERENCES `tbl_autobuscompany` (`companyId`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `tbl_jadwalharian`
 --
 ALTER TABLE `tbl_jadwalharian`
-ADD CONSTRAINT `tbl_jadwalharian_ibfk_1` FOREIGN KEY (`scheduleId`) REFERENCES `tbl_jadwal` (`scheduleId`) ON DELETE CASCADE ON UPDATE CASCADE,
-ADD CONSTRAINT `tbl_jadwalharian_ibfk_2` FOREIGN KEY (`vehicleId`) REFERENCES `tbl_tipe_montor` (`vehicleTypeId`) ON DELETE CASCADE ON UPDATE CASCADE,
-ADD CONSTRAINT `tbl_jadwalharian_ibfk_3` FOREIGN KEY (`crewId`) REFERENCES `tbl_kruperson` (`crewId`);
+ADD CONSTRAINT `tbl_jadwalharian_ibfk_2` FOREIGN KEY (`crewId`) REFERENCES `tbl_kruperson` (`crewId`) ON DELETE SET NULL ON UPDATE CASCADE,
+ADD CONSTRAINT `tbl_jadwalharian_ibfk_3` FOREIGN KEY (`vehicleId`) REFERENCES `tbl_montor` (`vehicleId`) ON UPDATE CASCADE,
+ADD CONSTRAINT `tbl_jadwalharian_ibfk_4` FOREIGN KEY (`scheduleId`) REFERENCES `tbl_jadwal` (`scheduleId`) ON UPDATE CASCADE;
 
 --
 -- Constraints for table `tbl_kruperson`
 --
 ALTER TABLE `tbl_kruperson`
-ADD CONSTRAINT `tbl_kruperson_ibfk_1` FOREIGN KEY (`companyId`) REFERENCES `tbl_autobuscompany` (`companyId`) ON DELETE CASCADE ON UPDATE CASCADE;
+ADD CONSTRAINT `tbl_kruperson_ibfk_1` FOREIGN KEY (`companyId`) REFERENCES `tbl_autobuscompany` (`companyId`) ON UPDATE CASCADE;
 
 --
 -- Constraints for table `tbl_montor`
 --
 ALTER TABLE `tbl_montor`
-ADD CONSTRAINT `tbl_montor_ibfk_1` FOREIGN KEY (`vehicleTypeId`) REFERENCES `tbl_tipe_montor` (`vehicleTypeId`) ON DELETE CASCADE ON UPDATE CASCADE;
+ADD CONSTRAINT `tbl_montor_ibfk_1` FOREIGN KEY (`vehicleTypeId`) REFERENCES `tbl_tipe_montor` (`vehicleTypeId`) ON DELETE CASCADE ON UPDATE CASCADE,
+ADD CONSTRAINT `tbl_montor_ibfk_2` FOREIGN KEY (`companyId`) REFERENCES `tbl_autobuscompany` (`companyId`) ON UPDATE CASCADE;
 
 --
 -- Constraints for table `tbl_numpak`
@@ -366,9 +369,9 @@ ADD CONSTRAINT `tbl_pesen_ibfk_1` FOREIGN KEY (`customerId`) REFERENCES `tbl_mle
 -- Constraints for table `tbl_tiket`
 --
 ALTER TABLE `tbl_tiket`
-ADD CONSTRAINT `tbl_tiket_ibfk_1` FOREIGN KEY (`orderId`) REFERENCES `tbl_pesen` (`orderId`) ON DELETE CASCADE ON UPDATE CASCADE,
-ADD CONSTRAINT `tbl_tiket_ibfk_2` FOREIGN KEY (`dayScheduleId`) REFERENCES `tbl_jadwalharian` (`dayScheduleId`) ON UPDATE CASCADE,
-ADD CONSTRAINT `tbl_tiket_ibfk_3` FOREIGN KEY (`pessengerId`) REFERENCES `tbl_numpak` (`pessengerId`) ON UPDATE CASCADE;
+ADD CONSTRAINT `tbl_tiket_ibfk_4` FOREIGN KEY (`dayScheduleId`) REFERENCES `tbl_jadwalharian` (`dayScheduleId`) ON UPDATE CASCADE,
+ADD CONSTRAINT `tbl_tiket_ibfk_5` FOREIGN KEY (`orderId`) REFERENCES `tbl_pesen` (`orderId`) ON UPDATE CASCADE,
+ADD CONSTRAINT `tbl_tiket_ibfk_6` FOREIGN KEY (`pessengerId`) REFERENCES `tbl_numpak` (`pessengerId`) ON UPDATE CASCADE;
 
 --
 -- Constraints for table `tbl_tipe_montor`
@@ -381,7 +384,7 @@ ADD CONSTRAINT `tbl_tipe_montor_ibfk_2` FOREIGN KEY (`companyId`) REFERENCES `tb
 -- Constraints for table `tbl_titikmampir`
 --
 ALTER TABLE `tbl_titikmampir`
-ADD CONSTRAINT `tbl_titikmampir_ibfk_1` FOREIGN KEY (`companyId`) REFERENCES `tbl_autobuscompany` (`companyId`) ON DELETE CASCADE ON UPDATE CASCADE;
+ADD CONSTRAINT `tbl_titikmampir_ibfk_1` FOREIGN KEY (`routeId`) REFERENCES `tbl_rute` (`routeId`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
