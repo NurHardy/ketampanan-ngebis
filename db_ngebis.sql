@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 14, 2016 at 06:38 AM
+-- Generation Time: Apr 01, 2016 at 01:25 PM
 -- Server version: 5.6.24
 -- PHP Version: 5.6.8
 
@@ -29,7 +29,14 @@ SET time_zone = "+00:00";
 CREATE TABLE IF NOT EXISTS `tbl_autobuscompany` (
   `companyId` int(11) NOT NULL,
   `companyName` varchar(128) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `tbl_autobuscompany`
+--
+
+INSERT INTO `tbl_autobuscompany` (`companyId`, `companyName`) VALUES
+(1, 'PO. Cobaan');
 
 -- --------------------------------------------------------
 
@@ -90,6 +97,36 @@ CREATE TABLE IF NOT EXISTS `tbl_lungguhan` (
   `seatNumber` varchar(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `tbl_lungguhan`
+--
+
+INSERT INTO `tbl_lungguhan` (`seatsId`, `seatNumber`) VALUES
+(24, '1A'),
+(24, '1B'),
+(24, '1C'),
+(24, '2A'),
+(24, '2B'),
+(24, '2C'),
+(24, '3A'),
+(24, '3B'),
+(24, '3C'),
+(24, '4A'),
+(24, '4B'),
+(24, '4C'),
+(24, '5A'),
+(24, '5B'),
+(24, '5C'),
+(24, '6A'),
+(24, '6B'),
+(24, '6C'),
+(24, '7A'),
+(24, '7B'),
+(24, '7C'),
+(24, '8A'),
+(24, '8B'),
+(24, '8C');
+
 -- --------------------------------------------------------
 
 --
@@ -115,7 +152,7 @@ CREATE TABLE IF NOT EXISTS `tbl_montor` (
   `licenseNumber` varchar(16) NOT NULL,
   `image` varchar(128) NOT NULL,
   `vehicleTypeId` int(11) NOT NULL,
-  `position` point NOT NULL,
+  `position` point DEFAULT NULL,
   `busFasilities` set('AC','Non AC','Music','Charger') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -295,7 +332,7 @@ ALTER TABLE `tbl_titikmampir`
 -- AUTO_INCREMENT for table `tbl_autobuscompany`
 --
 ALTER TABLE `tbl_autobuscompany`
-  MODIFY `companyId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `companyId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
 --
 -- AUTO_INCREMENT for table `tbl_jadwal`
 --
@@ -316,6 +353,11 @@ ALTER TABLE `tbl_kruperson`
 --
 ALTER TABLE `tbl_rute`
   MODIFY `routeId` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `tbl_tipe_montor`
+--
+ALTER TABLE `tbl_tipe_montor`
+  MODIFY `vehicleTypeId` int(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `tbl_titikmampir`
 --
@@ -350,8 +392,8 @@ ADD CONSTRAINT `tbl_kruperson_ibfk_1` FOREIGN KEY (`companyId`) REFERENCES `tbl_
 -- Constraints for table `tbl_montor`
 --
 ALTER TABLE `tbl_montor`
-ADD CONSTRAINT `tbl_montor_ibfk_1` FOREIGN KEY (`vehicleTypeId`) REFERENCES `tbl_tipe_montor` (`vehicleTypeId`) ON DELETE CASCADE ON UPDATE CASCADE,
-ADD CONSTRAINT `tbl_montor_ibfk_2` FOREIGN KEY (`companyId`) REFERENCES `tbl_autobuscompany` (`companyId`) ON UPDATE CASCADE;
+ADD CONSTRAINT `tbl_montor_ibfk_2` FOREIGN KEY (`companyId`) REFERENCES `tbl_autobuscompany` (`companyId`) ON UPDATE CASCADE,
+ADD CONSTRAINT `tbl_montor_ibfk_3` FOREIGN KEY (`vehicleTypeId`) REFERENCES `tbl_tipe_montor` (`vehicleTypeId`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `tbl_numpak`
